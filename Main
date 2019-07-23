@@ -1,0 +1,160 @@
+using System;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Minesweeper
+{
+   class Program
+   {
+       public static int count = 1;
+       static void Main(string[] args)
+       {
+           //Console.WriteLine("Starting up");
+           TextReader input = Console.In;
+           try
+           {
+               // sets Console to read from the file minetest1.txt
+               // if the file doesn't exist, it will read from standard in instead
+               // this is one of the few situations where it's OK
+               // to catch and ignore exceptions
+               Console.SetIn(new StreamReader("minetest1.txt"));
+           }
+           catch (Exception e)
+           {
+               //Console.WriteLine("Exception happened");
+               //ignore
+           }
+
+           int numTests = Convert.ToInt32(Console.ReadLine());
+           for (int t = 0; t < numTests; t++)
+           {
+               string[] nums = Console.ReadLine().Split(' ');
+               int numRows = Convert.ToInt32(nums[0]);
+               int numCols = Convert.ToInt32(nums[1]);
+               int numMines = Convert.ToInt32(nums[2]);
+               //represents the board
+               int[,] temp = new int[numRows, numCols];
+               for (int m = 0; m < numMines; m++)
+               {
+                   string[] coords = Console.ReadLine().Split(' ');
+                   int row = Convert.ToInt32(coords[0]);
+                   int col = Convert.ToInt32(coords[1]);
+                   temp[row, col] = -1;   //Creates mines as -1
+               }
+               MineCount(numRows, numCols, temp);  //Counts no. of Mines
+               gameboard(numRows, numCols, temp);  //Represents the board
+
+
+           }
+          
+           Console.SetIn(input);
+           Console.ReadLine();
+
+       }
+
+       public static void gameboard(int r, int c, int[,] temp)
+       {
+           for (int i = 0; i < r; i++)
+           {
+               for (int j = 0; j < c; j++)
+               {
+                   if (temp[i, j] == -1)
+                   {
+                       Console.Write("M" + " ");
+                   }
+                   else
+                   {
+                       Console.Write(temp[i, j] + " ");
+                   }                   
+               }
+               Console.WriteLine();
+
+           }
+       }
+
+       public static void MineCount(int r, int c, int[,] temp)
+       {
+           for (int i = 0; i < r; i++)
+           {
+               for (int j = 0; j < c; j++)
+               {
+                   //Four corners
+                       //top left
+                   if (temp[i, j] == -1 & i == 0 & j == 0)
+                   {
+                       temp[i, j + 1] = (temp[i, j + 1]==-1) ? -1 : temp[i, j + 1]+1;
+                       temp[i + 1, j] = (temp[i + 1, j]==-1) ? -1 : temp[i + 1, j]+1;
+                       temp[i + 1, j + 1] = (temp[i + 1, j + 1]==-1) ? -1 : temp[i + 1, j + 1]+1;
+                   }
+                       //top right
+                   else if(temp[i, j] == -1 & i == 0 & j == c - 1)
+                   {
+                       temp[i, j - 1] = (temp[i, j - 1] == -1) ? -1 : temp[i, j - 1] + 1;
+                       temp[i + 1, j] = (temp[i + 1, j] == -1) ? -1 : temp[i + 1, j] + 1;
+                       temp[i + 1, j - 1] = (temp[i + 1, j - 1] == -1) ? -1 : temp[i + 1, j - 1] + 1;
+                   }
+                       //bottom left
+                   else if (temp[i, j] == -1 & i == r-1 & j == 0)
+                   {
+                       temp[i-1, j] = (temp[i-1, j] == -1) ? -1 : temp[i-1, j] + 1;
+                       temp[i, j+1] = (temp[i, j+1] == -1) ? -1 : temp[i, j+1] + 1;
+                       temp[i - 1, j + 1] = (temp[i - 1, j + 1] == -1) ? -1 : temp[i - 1, j + 1] + 1;
+                   }
+                       //bottom right
+                   else if (temp[i, j] == -1 & i == r - 1 & j == c - 1)
+                   {
+                       temp[i, j-1] = (temp[i, j-1] == -1) ? -1 : temp[i, j-1] + 1;
+                       temp[i-1, j] = (temp[i-1, j] == -1) ? -1 : temp[i-1, j] + 1;
+                       temp[i - 1, j - 1] = (temp[i - 1, j - 1] == -1) ? -1 : temp[i - 1, j - 1] + 1;
+                   }
+                   //Four sides
+                       //Top
+                   else if (temp[i, j] == -1 & i == 0)
+                   {
+                       temp[i, j-1] = (temp[i, j-1] == -1) ? -1 : temp[i, j-1] + 1;
+                       temp[i, j + 1] = (temp[i, j + 1] == -1) ? -1 : temp[i, j + 1] + 1;
+                       temp[i + 1, j] = (temp[i + 1, j] == -1) ? -1 : temp[i + 1, j] + 1;
+                       temp[i + 1, j - 1] = (temp[i + 1, j - 1] == -1) ? -1 : temp[i + 1, j - 1] + 1;
+                       temp[i + 1, j + 1] = (temp[i + 1, j + 1] == -1) ? -1 : temp[i + 1, j + 1] + 1;
+                   }
+                       //bottom
+                   else if (temp[i, j] == -1 & i == r-1)
+                   {
+                       temp[i, j - 1] = (temp[i, j - 1] == -1) ? -1 : temp[i, j - 1] + 1;
+                       temp[i, j + 1] = (temp[i, j + 1] == -1) ? -1 : temp[i, j + 1] + 1;
+                       temp[i - 1, j] = (temp[i - 1, j] == -1) ? -1 : temp[i - 1, j] + 1;
+                       temp[i - 1, j - 1] = (temp[i - 1, j - 1] == -1) ? -1 : temp[i - 1, j - 1] + 1;
+                       temp[i - 1, j + 1] = (temp[i - 1, j + 1] == -1) ? -1 : temp[i - 1, j + 1] + 1;
+                   }
+                       //left
+                   else if (temp[i, j] == -1 & j == 0)
+                   {
+                       temp[i-1, j] = (temp[i-1, j] == -1) ? -1 : temp[i-1, j] + 1;
+                       temp[i+1, j] = (temp[i+1, j] == -1) ? -1 : temp[i+1, j] + 1;
+                       temp[i - 1, j+1] = (temp[i - 1, j+1] == -1) ? -1 : temp[i - 1, j+1] + 1;
+                       temp[i, j + 1] = (temp[i, j + 1] == -1) ? -1 : temp[i, j + 1] + 1;
+                       temp[i + 1, j + 1] = (temp[i + 1, j + 1] == -1) ? -1 : temp[i + 1, j + 1] + 1;
+                   }
+                       //right
+                   else if (temp[i, j] == -1 & j == c-1)
+                   {
+                       temp[i - 1, j] = (temp[i - 1, j] == -1) ? -1 : temp[i - 1, j] + 1;
+                       temp[i + 1, j] = (temp[i + 1, j] == -1) ? -1 : temp[i + 1, j] + 1;
+                       temp[i - 1, j - 1] = (temp[i - 1, j - 1] == -1) ? -1 : temp[i - 1, j - 1] + 1;
+                       temp[i, j - 1] = (temp[i, j - 1] == -1) ? -1 : temp[i, j - 1] + 1;
+                       temp[i + 1, j - 1] = (temp[i + 1, j - 1] == -1) ? -1 : temp[i + 1, j - 1] + 1;
+                   }
+                   else if(temp[i,j] == -1)
+                   {
+                       temp[i,j+1] = (temp[i, j+1] == -1) ? -1 : temp[i, j+1] + 1;
+                       temp[i,j-1] = (temp[i, j-1] == -1) ? -1 : temp[i, j-1] + 1;
+                       temp[i+1,j] = (temp[i + 1, j] == -1) ? -1 : temp[i + 1, j] + 1;
+                       temp[i-1,j] = (temp[i - 1, j] == -1) ? -1 : temp[i - 1, j] + 1;
+                   }
+               }
+           }
+       }
+   }
+}
